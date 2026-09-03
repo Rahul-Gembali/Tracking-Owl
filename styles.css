@@ -1,0 +1,372 @@
+:root {
+  --bg-paper: #e9e8e3;
+  --text-dark: #22201e;
+  --text-muted: #6b6762;
+  --accent-red: #d31826;
+  --accent-red-glow: rgba(230, 25, 40, 0.65);
+  --panel-bg: rgba(245, 243, 238, 0.85);
+  --panel-border: rgba(40, 36, 32, 0.12);
+  --panel-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--bg-paper);
+  background-image: url('assets/paper_tile.jpg');
+  background-repeat: repeat;
+  color: var(--text-dark);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Page Layout */
+.app-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Header & Title Badge */
+.header-badge {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  box-shadow: var(--panel-shadow);
+  z-index: 20;
+  pointer-events: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-red);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--accent-red);
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.35); opacity: 1; box-shadow: 0 0 12px var(--accent-red); }
+}
+
+.header-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+}
+
+.header-subtitle {
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+/* Main Owl Stage */
+.stage-wrapper {
+  position: relative;
+  /* Maintain 1024:576 aspect ratio while fitting viewport cleanly */
+  width: min(94vw, calc(90vh * (1024 / 576)));
+  aspect-ratio: 1024 / 576;
+  max-width: 1280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px;
+  cursor: crosshair;
+}
+
+/* The Canvas for Eye Rendering */
+#eyeCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* The Stippled Cutout Artwork Overlay */
+.owl-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 3;
+  pointer-events: none;
+  filter: contrast(1.02);
+}
+
+/* Laser Dot / Prey Tracking Element */
+.laser-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 14px;
+  height: 14px;
+  margin-top: -7px;
+  margin-left: -7px;
+  background-color: #ff0d25;
+  border-radius: 50%;
+  box-shadow: 0 0 8px 3px rgba(255, 15, 40, 0.9),
+              0 0 20px 6px rgba(255, 0, 30, 0.5),
+              0 0 40px 10px rgba(255, 0, 0, 0.2);
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.25s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.laser-dot.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.laser-dot::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid rgba(255, 60, 60, 0.4);
+  border-radius: 50%;
+  animation: laser-pulse 1.4s infinite ease-out;
+}
+
+@keyframes laser-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
+/* Laser Spark Trail Canvas */
+#trailCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99;
+}
+
+/* Night / Flashlight Mode Overlay */
+.night-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  background: radial-gradient(circle 280px at var(--mouse-x, 50vw) var(--mouse-y, 50vh), 
+    rgba(0, 0, 0, 0.05) 0%, 
+    rgba(10, 10, 14, 0.75) 55%, 
+    rgba(6, 6, 9, 0.96) 85%);
+}
+
+body.night-mode .night-overlay {
+  opacity: 1;
+}
+
+body.night-mode {
+  background-color: #07070a;
+}
+
+body.night-mode .header-badge {
+  background: rgba(22, 22, 28, 0.85);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.night-mode .header-title {
+  color: #f0f0f3;
+}
+
+body.night-mode .header-subtitle {
+  color: #8c8c9a;
+}
+
+body.night-mode .controls-panel {
+  background: rgba(20, 20, 26, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.night-mode .control-btn {
+  color: #e0e0e6;
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(32, 32, 40, 0.6);
+}
+
+body.night-mode .control-btn:hover {
+  background: rgba(48, 48, 60, 0.8);
+}
+
+body.night-mode .control-btn.active {
+  background: rgba(211, 24, 38, 0.25);
+  border-color: var(--accent-red);
+  color: #ff5463;
+}
+
+/* Floating Controls Dock */
+.controls-panel {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--panel-border);
+  border-radius: 999px;
+  box-shadow: var(--panel-shadow);
+  z-index: 60;
+  pointer-events: auto;
+}
+
+.control-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.control-btn svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.control-btn:active {
+  transform: translateY(0);
+}
+
+.control-btn.active {
+  background: rgba(211, 24, 38, 0.12);
+  border-color: var(--accent-red);
+  color: var(--accent-red);
+  box-shadow: 0 0 10px rgba(211, 24, 38, 0.15);
+}
+
+.control-separator {
+  width: 1px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 4px;
+}
+
+body.night-mode .control-separator {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Subtle Hint Pill */
+.hint-text {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+body.night-mode .hint-text {
+  color: #727282;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  .header-badge {
+    top: 14px;
+    padding: 6px 14px;
+  }
+  .header-title {
+    font-size: 0.8rem;
+  }
+  .header-subtitle {
+    display: none;
+  }
+  .controls-panel {
+    bottom: 16px;
+    gap: 6px;
+    padding: 6px 8px;
+    max-width: 92vw;
+    overflow-x: auto;
+  }
+  .control-btn span {
+    display: none;
+  }
+  .control-btn {
+    padding: 8px 10px;
+  }
+  .hint-text {
+    bottom: 66px;
+    font-size: 0.68rem;
+  }
+}

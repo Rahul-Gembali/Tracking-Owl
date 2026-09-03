@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Interactive Stippled Owl • Gaze Tracking</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%23d31826'/><circle cx='50' cy='50' r='18' fill='%23111'/></svg>" />
+</head>
+<body>
+  <div class="app-container" id="appContainer">
+    <!-- Top Status / Branding Badge -->
+    <header class="header-badge">
+      <span class="badge-dot"></span>
+      <span class="header-title">Nocturnal Gaze</span>
+      <span class="header-subtitle">Adaptive Raptor Eye Tracking</span>
+    </header>
+
+    <!-- Main Owl Stage -->
+    <main class="stage-wrapper" id="stageWrapper">
+      <div class="stage" id="stage">
+        <!-- Canvas for Dynamic Red Eyeballs & Pupils -->
+        <canvas id="eyeCanvas"></canvas>
+        
+        <!-- Artwork Overlay with Cutout Eye Sockets & Stippled Feathers -->
+        <img id="owlOverlay" class="owl-overlay" src="assets/owl_cutout.png" alt="Stippled Owl Artwork" />
+      </div>
+    </main>
+
+    <!-- Interactive Hint -->
+    <div class="hint-text" id="hintText">Move cursor to track • Click anywhere on owl to interact</div>
+
+    <!-- Floating Dock Controls -->
+    <nav class="controls-panel" aria-label="Interactive Controls">
+      <button class="control-btn" id="laserBtn" title="Toggle Prey / Laser Dot">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+        <span>Laser Dot</span>
+      </button>
+
+      <button class="control-btn" id="nightBtn" title="Toggle Night & Lantern Mode">
+        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span>Night Mode</span>
+      </button>
+
+      <div class="control-separator"></div>
+
+      <button class="control-btn" id="blinkBtn" title="Trigger Instant Blink / Wink">
+        <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Blink</span>
+      </button>
+
+      <button class="control-btn active" id="soundBtn" title="Toggle Atmospheric Audio">
+        <svg id="soundIcon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <span>Sound</span>
+      </button>
+
+      <button class="control-btn" id="fullscreenBtn" title="Toggle Fullscreen View">
+        <svg viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        <span>Fullscreen</span>
+      </button>
+    </nav>
+
+    <!-- Night Mode Radial Lantern Mask -->
+    <div class="night-overlay" id="nightOverlay"></div>
+
+    <!-- Laser Dot Target Element -->
+    <div class="laser-dot" id="laserDot"></div>
+
+    <!-- Canvas for Laser Sparks & Trailing Particles -->
+    <canvas id="trailCanvas"></canvas>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

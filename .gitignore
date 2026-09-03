@@ -1,0 +1,23 @@
+# Dependencies & OS
+node_modules/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+
+# Test screenshots
+shot_*.png
+screenshot*.png
+
+# Temp
+scripts/__pycache__/
+chrome_temp/
